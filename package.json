@@ -16,17 +16,18 @@
     "axios": "^0.21.1"
   },
   "author": "Christopher Tran <pfftdammitchris@gmail.com>",
-  "homepage": "https://github.com/pfftdammitchris/projectbreeze-cli#readme",
+  "homepage": "https://github.com/pfftdammitchris/boostnote-api#readme",
   "license": "ISC",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "files": [
     "dist"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pfftdammitchris/projectbreeze-cli.git"
+    "url": "git@github.com:pfftdammitchris/boostnote-api.git"
   },
   "bugs": {
-    "url": "https://github.com/pfftdammitchris/projectbreeze-cli/issues"
+    "url": "https://github.com/pfftdammitchris/boostnote-api/issues"
   }
 }
