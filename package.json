@@ -1,0 +1,32 @@
+{
+  "name": "boostnote-api",
+  "version": "0.0.2",
+  "description": "Unofficial API library for Boostnote",
+  "keywords": [
+    "boostnote",
+    "note",
+    "documents"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc -w",
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "^0.21.1"
+  },
+  "author": "Christopher Tran <pfftdammitchris@gmail.com>",
+  "homepage": "https://github.com/pfftdammitchris/projectbreeze-cli#readme",
+  "license": "ISC",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pfftdammitchris/projectbreeze-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pfftdammitchris/projectbreeze-cli/issues"
+  }
+}

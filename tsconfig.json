@@ -1,0 +1,23 @@
+{
+  "ts-node": {
+    "transpileOnly": true
+  },
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "declarationDir": "dist",
+    "esModuleInterop": true,
+    "lib": ["esnext"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmitOnError": false,
+    "outDir": "dist",
+    "pretty": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "target": "es2015"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/**/*"]
+}
