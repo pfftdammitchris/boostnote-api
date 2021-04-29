@@ -12,9 +12,7 @@
     "start": "tsc -w",
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
-  "dependencies": {
-    "axios": "^0.21.1"
-  },
+  "dependencies": {},
   "author": "Christopher Tran <pfftdammitchris@gmail.com>",
   "homepage": "https://github.com/pfftdammitchris/boostnote-api#readme",
   "license": "ISC",
