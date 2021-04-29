@@ -1,25 +1,64 @@
-import axios, { AxiosInstance } from 'axios'
+import https from 'https'
+import { URL } from 'url'
+import qs from 'querystring'
 import { inspect } from 'util'
 import * as T from './types'
 
 class Boostnote {
-  #req: AxiosInstance
-  #token: string
-  baseURL = 'https://boostnote.io/api';
+  #hostname = 'boostnote.io'
+  #pathname = '/api'
+  #protocol = 'https'
+  #token: string;
 
   [inspect.custom]() {
     return {
-      baseURL: this.baseURL,
+      hostname: this.#hostname,
+      pathname: this.#pathname,
       token: this.#token,
     }
   }
 
   constructor(token: string) {
+    if (!token) throw new Error(`Token is required`)
     this.#token = token
-    this.#req = axios.create({
-      baseURL: this.baseURL,
-      headers: { Authorization: `Bearer ${this.#token}` },
+  }
+
+  #req = (path: string | URL, opts?: https.RequestOptions & { data?: any }) => {
+    return new Promise((resolve, reject) => {
+      const url = typeof path === 'string' ? new URL(path) : path
+      const options: https.RequestOptions = {
+        method: opts?.method || 'get',
+        headers: this.getHeaders(opts?.headers),
+        hostname: this.#hostname,
+        path: url.pathname,
+      }
+      if (/(post|put)/i.test(options.method) && opts?.data) {
+        const data = qs.stringify(opts.data)
+        options.headers['Content-Length'] = Buffer.byteLength(data)
+      }
+      const req = https.request(options, (res) => {
+        let response = ''
+        res
+          .on('data', (chunk) => (response += chunk))
+          .on('error', reject)
+          .on('end', () => resolve(JSON.parse(response)))
+      })
+      req.on('error', reject)
+      req.end()
     })
+  }
+
+  getHeaders(opts?: Record<string, any>) {
+    return {
+      Authorization: `Bearer ${this.#token}`,
+      ...opts,
+    }
+  }
+
+  getUrl(path: string) {
+    return new URL(
+      `${this.#protocol}://${this.#hostname}${this.#pathname}${path}`,
+    )
   }
 
   /**
@@ -28,11 +67,10 @@ class Boostnote {
    * @return { Promise<T.BoostnoteDocument> }
    */
   async getDocument(id: string) {
-    const res = await this.#req.get<
-      any,
-      { data: { doc: T.BoostnoteDocument } }
-    >(`/docs/${id}`)
-    return res.data.doc
+    const doc = (await this.#req(this.getUrl(`/docs/${id}`))) as {
+      doc: Promise<T.BoostnoteDocument>
+    }
+    return doc.doc
   }
 
   /**
@@ -52,11 +90,14 @@ class Boostnote {
     parentFolderId?: string
     orderBy?: T.OrderBy
   }) {
-    const res = await this.#req.get<
-      any,
-      { data: { docs: T.BoostnoteDocument[] } }
-    >(`/docs`, { params: opts })
-    return res.data.docs
+    const url = this.getUrl('/docs')
+    if (opts) {
+      Object.entries(opts).forEach(([key, value]) =>
+        url.searchParams.set(key, String(value)),
+      )
+    }
+    const response = (await this.#req(url)) as { docs: T.BoostnoteDocument[] }
+    return response.docs
   }
 
   /**
@@ -75,11 +116,11 @@ class Boostnote {
     parentFolder?: string
     tags?: string[]
   }) {
-    const res = await this.#req.post<
-      any,
-      { data: { doc: T.BoostnoteDocument } }
-    >(`/docs`, opts)
-    return res.data.doc
+    const url = this.getUrl(`/docs`)
+    const response = (await this.#req(url, { method: 'post', data: opts })) as {
+      doc: T.BoostnoteDocument
+    }
+    return response.doc
   }
 
   /**
@@ -100,12 +141,12 @@ class Boostnote {
     workspaceId?: string
     parentFolder?: string
   }) {
-    const { id, ...rest } = opts
-    const res = await this.#req.patch<
-      any,
-      { data: { doc: T.BoostnoteDocument } }
-    >(`/docs/${id}`, rest)
-    return res.data.doc
+    const url = this.getUrl(`/docs/${opts.id}`)
+    const response = (await this.#req(url, {
+      method: 'patch',
+      data: opts,
+    })) as { doc: T.BoostnoteDocument }
+    return response.doc
   }
 
   /**
@@ -114,7 +155,7 @@ class Boostnote {
    * @return { Promise<null> }
    */
   async removeDocument(id: string): Promise<null> {
-    await this.#req.delete(`/docs/${id}`)
+    await this.#req(`/docs/${id}`, { method: 'delete' })
     return null
   }
 
@@ -124,11 +165,11 @@ class Boostnote {
    * @return { Promise<T.BoostnoteFolder}
    */
   async getFolder(id: string) {
-    const res = await this.#req.get<
-      any,
-      { data: { folder: T.BoostnoteFolder } }
-    >(`/folders/${id}`)
-    return res.data.folder
+    const url = this.getUrl(`/folders/${id}`)
+    const req = (await this.#req(url)) as {
+      folder: T.BoostnoteFolder
+    }
+    return req.folder
   }
 
   /**
@@ -145,11 +186,16 @@ class Boostnote {
     parentFolder?: string
     orderBy?: T.OrderBy
   }) {
-    const res = await this.#req.get<
-      any,
-      { data: { folders: T.BoostnoteFolder[] } }
-    >(`/folders`, { params: opts })
-    return res.data.folders
+    const url = this.getUrl('/folders')
+    if (opts) {
+      Object.entries(opts).forEach(([key, value]) => {
+        url.searchParams.set(key, value)
+      })
+    }
+    const req = (await this.#req(url)) as {
+      folders: T.BoostnoteFolder[]
+    }
+    return req.folders
   }
 
   /**
@@ -178,17 +224,18 @@ class Boostnote {
           parentFolderId?: string
         },
   ) {
-    let body = {} as Extract<typeof opts, object>
+    let body = {} as any
     if (typeof opts === 'string') {
       body.name = opts
     } else {
       body = opts
     }
-    const res = await this.#req.post<
-      any,
-      { data: { folder: T.BoostnoteFolder } }
-    >(`/folders`, body)
-    return res?.data?.folder
+    body = qs.stringify(body)
+    const url = this.getUrl(`/folders`)
+    const response = (await this.#req(url, { data: body })) as {
+      folder: T.BoostnoteFolder
+    }
+    return response.folder
   }
 
   /**
@@ -198,9 +245,10 @@ class Boostnote {
    * @return { Promise<null> }
    */
   async removeFolder(id: string, opts?: { force?: boolean }): Promise<null> {
-    let params = {} as typeof opts
+    const params = {} as typeof opts
+    const url = this.getUrl(`/folders/${id}`)
     if (opts?.force) params.force = true
-    await this.#req.delete(`/folders/${id}`, { params })
+    await this.#req(url, { method: 'post' })
     return null
   }
 }
