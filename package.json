@@ -1,10 +1,15 @@
 {
-  "name": "boostnote-api",
-  "version": "0.0.6",
-  "description": "Unofficial API library for Boostnote",
+  "name": "boostnote",
+  "version": "0.0.7",
+  "description": "Library for the Boostnote API",
   "keywords": [
     "boostnote",
+    "api",
+    "collaboration",
+    "cloud",
     "note",
+    "notes",
+    "docs",
     "documents"
   ],
   "scripts": {
