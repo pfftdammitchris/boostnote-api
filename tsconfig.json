@@ -3,7 +3,6 @@
     "transpileOnly": true
   },
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
     "declaration": true,
     "declarationDir": "dist",
     "esModuleInterop": true,

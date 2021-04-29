@@ -1,13 +1,24 @@
 import axios, { AxiosInstance } from 'axios'
+import { inspect } from 'util'
 import * as T from './types'
 
 class Boostnote {
   #req: AxiosInstance
+  #token: string
+  baseURL = 'https://boostnote.io/api';
+
+  [inspect.custom]() {
+    return {
+      baseURL: this.baseURL,
+      token: this.#token,
+    }
+  }
 
   constructor(token: string) {
+    this.#token = token
     this.#req = axios.create({
-      baseURL: 'https://boostnote.io/api',
-      headers: { Authorization: `Bearer ${token}` },
+      baseURL: this.baseURL,
+      headers: { Authorization: `Bearer ${this.#token}` },
     })
   }
 
