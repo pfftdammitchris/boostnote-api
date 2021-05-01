@@ -1,11 +1,11 @@
-# `boostnote-api`
+# `boostnote`
 
 > Documentation WIP
 
 ## Installation
 
 ```bash
-npm install boostnote-api
+npm install boostnote
 ```
 
 ## Usage
@@ -13,7 +13,7 @@ npm install boostnote-api
 > ES5
 
 ```js
-const Boostnote = require('boostnote-api')
+const Boostnote = require('boostnote')
 
 const token = 'abc....lzx'
 const boostnote = new Boostnote(token)
@@ -22,7 +22,7 @@ const boostnote = new Boostnote(token)
 > ES6
 
 ```js
-import Boostnote from 'boostnote-api'
+import Boostnote from 'boostnote'
 
 const token = 'abc....lzx'
 const boostnote = new Boostnote(token)
