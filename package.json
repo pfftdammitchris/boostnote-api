@@ -1,9 +1,28 @@
 {
   "name": "boostnote",
   "version": "0.0.7",
-  "description": "Library for the Boostnote API",
+  "description": "Nodejs library for the Boostnote API",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "start": "tsc -w",
+    "test": "ts-mocha"
+  },
+  "peerDendencies": {},
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "ts-mocha": "^8.0.0",
+    "typescript": "^4.2.4"
+  },
+  "author": "Christopher Tran <pfftdammitchris@gmail.com>",
+  "homepage": "https://github.com/pfftdammitchris/boostnote-api#readme",
   "keywords": [
     "boostnote",
+    "boosthub",
+    "boost",
     "api",
     "collaboration",
     "cloud",
@@ -12,17 +31,7 @@
     "docs",
     "documents"
   ],
-  "scripts": {
-    "build": "tsc",
-    "start": "tsc -w",
-    "test": "echo \"Error: run tests from root\" && exit 1"
-  },
-  "dependencies": {},
-  "author": "Christopher Tran <pfftdammitchris@gmail.com>",
-  "homepage": "https://github.com/pfftdammitchris/boostnote-api#readme",
   "license": "ISC",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
   "files": [
     "dist"
   ],
